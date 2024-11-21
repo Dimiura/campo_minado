@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campo Minado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <h1>Campo Minado</h1>
+        
+        <div id="menu" class="active">
+            <h2>🏆 Recordes</h2>
+            <div id="high-scores"></div>
+            
+            <div class="difficulty-buttons">
+                <button onclick="startGame('easy')">😊 Fácil</button>
+                <button onclick="startGame('medium')">😎 Médio</button>
+                <button onclick="startGame('hard')">🤓 Difícil</button>
+            </div>
+        </div>
+
+        <div id="game-board" class="hidden">
+            <div id="game-info">
+                <div id="timer">⏱️ Tempo: 0.0s</div>
+                <button onclick="returnToMenu()" class="menu-button">🏠 Menu</button>
+            </div>
+            <div id="board"></div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
