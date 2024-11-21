@@ -4,7 +4,6 @@ import random
 import time
 import json
 import os
-from PIL import Image, ImageTk
 
 class MinesweeperGame:
     def __init__(self):
@@ -12,7 +11,6 @@ class MinesweeperGame:
         self.root.title("Campo Minado")
         self.root.configure(bg='#E6F3FF')
         
-        # Configurações das dificuldades
         self.difficulties = {
             'Fácil': {'size': 8, 'mines': 10},
             'Médio': {'size': 12, 'mines': 30},
@@ -33,29 +31,17 @@ class MinesweeperGame:
             json.dump(self.high_scores, f)
     
     def create_main_menu(self):
-        # Título
         title = tk.Label(self.root, text="Campo Minado", font=('Arial', 24, 'bold'),
                         bg='#E6F3FF', fg='#003366')
         title.pack(pady=20)
         
-        # Frame para os botões
         button_frame = tk.Frame(self.root, bg='#E6F3FF')
         button_frame.pack(pady=10)
         
-        # Mostrar recordes
         scores_frame = tk.Frame(self.root, bg='#E6F3FF')
         scores_frame.pack(pady=20)
         
-        tk.Label(scores_frame, text="Recordes:", font=('Arial', 16, 'bold'),
-                bg='#E6F3FF', fg='#003366').pack()
         
-        for diff in self.difficulties:
-            score = self.high_scores[diff]
-            score_text = f"{diff}: {'Sem recorde' if score == float('inf') else f'{score:.1f}s'}"
-            tk.Label(scores_frame, text=score_text, font=('Arial', 12),
-                    bg='#E6F3FF', fg='#003366').pack()
-        
-        # Botões de dificuldade
         for diff in self.difficulties:
             btn = tk.Button(button_frame, text=diff,
                           command=lambda d=diff: self.start_game(d),
@@ -75,7 +61,7 @@ class MinesweeperGame:
         mines = self.difficulties[difficulty]['mines']
         
         self.current_game = GameBoard(game_window, size, mines, difficulty, self)
-        
+
 class GameBoard:
     def __init__(self, window, size, mines, difficulty, main_game):
         self.window = window
@@ -87,27 +73,35 @@ class GameBoard:
         self.board = []
         self.game_started = False
         self.start_time = None
+        self.elapsed_time = 0
+        self.timer_running = False
         
         self.create_board()
         self.create_timer()
     
     def create_timer(self):
-        self.timer_label = tk.Label(self.window, text="Tempo: 0.0s",
+        self.timer_label = tk.Label(self.window, text="",
                                   font=('Arial', 12), bg='#E6F3FF', fg='#003366')
         self.timer_label.grid(row=self.size + 1, column=0, columnspan=self.size, pady=10)
-        self.update_timer()
+    
+    def start_timer(self):
+        if not self.timer_running:
+            self.start_time = time.time() - self.elapsed_time
+            self.timer_running = True
+            self.update_timer()
+    
+    def stop_timer(self):
+        self.timer_running = False
     
     def update_timer(self):
-        if self.game_started and not hasattr(self, 'game_over'):
-            elapsed = time.time() - self.start_time
-            self.timer_label.config(text=f"Tempo: {elapsed:.1f}s")
+        if self.timer_running and not hasattr(self, 'game_over'):
+            self.elapsed_time = time.time() - self.start_time
+            self.timer_label.config(text=f"Tempo: {self.elapsed_time:.1f}s")
             self.window.after(100, self.update_timer)
     
     def create_board(self):
         self.board = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.buttons = []
-        
-        # Criar grade de botões
         for i in range(self.size):
             row = []
             for j in range(self.size):
@@ -127,7 +121,6 @@ class GameBoard:
         for row, col in mine_positions:
             self.board[row][col] = 'X'
             
-        # Calcular números
         for row in range(self.size):
             for col in range(self.size):
                 if self.board[row][col] != 'X':
@@ -139,8 +132,8 @@ class GameBoard:
     def click(self, row, col):
         if not self.game_started:
             self.game_started = True
-            self.start_time = time.time()
             self.place_mines(row, col)
+            self.start_timer()
         
         if self.board[row][col] == 'X':
             self.game_over()
@@ -190,16 +183,17 @@ class GameBoard:
         return True
     
     def win_game(self):
-        elapsed_time = time.time() - self.start_time
-        if elapsed_time < self.main_game.high_scores[self.difficulty]:
-            self.main_game.high_scores[self.difficulty] = elapsed_time
+        self.stop_timer()
+        if self.elapsed_time < self.main_game.high_scores[self.difficulty]:
+            self.main_game.high_scores[self.difficulty] = self.elapsed_time
             self.main_game.save_scores()
         
         messagebox.showinfo("Parabéns!", 
-                          f"Você venceu!\nTempo: {elapsed_time:.1f} segundos")
+                          f"Você venceu!\nTempo: {self.elapsed_time:.1f} segundos")
         self.window.destroy()
     
     def game_over(self):
+        self.stop_timer()
         self.game_over = True
         for i in range(self.size):
             for j in range(self.size):
