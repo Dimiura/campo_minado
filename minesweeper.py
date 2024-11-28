@@ -102,7 +102,7 @@ class GameBoard:
         if not self.game_started:
             self.game_started = True
             self.place_mines(row, col)
-            self.start_timer()
+            
         
         if self.board[row][col] == 'X':
             self.game_over()
@@ -152,7 +152,6 @@ class GameBoard:
         return True
     
     def win_game(self):
-        self.stop_timer()
         if self.elapsed_time < self.main_game.high_scores[self.difficulty]:
             self.main_game.high_scores[self.difficulty] = self.elapsed_time
             
@@ -162,7 +161,6 @@ class GameBoard:
         self.window.destroy()
     
     def game_over(self):
-        self.stop_timer()
         self.game_over = True
         for i in range(self.size):
             for j in range(self.size):
