@@ -17,9 +17,7 @@ class MinesweeperGame:
             'Difícil': {'size': 16, 'mines': 60}
         }
         
-       
         self.create_main_menu()
-        
     
     def create_main_menu(self):
         title = tk.Label(self.root, text="Campo Minado", font=('Arial', 24, 'bold'),
@@ -31,9 +29,6 @@ class MinesweeperGame:
         
         scores_frame = tk.Frame(self.root, bg='#E6F3FF')
         scores_frame.pack(pady=20)
-        
-        # Mostrar os recordes no menu principal
-       
         
         for diff in self.difficulties:
             btn = tk.Button(button_frame, text=diff,
@@ -71,27 +66,7 @@ class GameBoard:
         self.timer_running = False
         
         self.create_board()
-        self.create_timer()
-    
-    def create_timer(self):
-        self.timer_label = tk.Label(self.window, text="",
-                                  font=('Arial', 12), bg='#E6F3FF', fg='#003366')
-        self.timer_label.grid(row=self.size + 1, column=0, columnspan=self.size, pady=10)
-    
-    def start_timer(self):
-        if not self.timer_running:
-            self.start_time = time.time() - self.elapsed_time
-            self.timer_running = True
-            self.update_timer()
-    
-    def stop_timer(self):
-        self.timer_running = False
-    
-    def update_timer(self):
-        if self.timer_running and not hasattr(self, 'game_over'):
-            self.elapsed_time = time.time() - self.start_time
-            self.timer_label.config(text=f"Tempo: {self.elapsed_time:.1f}s")
-            self.window.after(100, self.update_timer)
+       
     
     def create_board(self):
         self.board = [[0 for _ in range(self.size)] for _ in range(self.size)]
