@@ -17,18 +17,9 @@ class MinesweeperGame:
             'Difícil': {'size': 16, 'mines': 60}
         }
         
-        self.high_scores = self.load_scores()
+       
         self.create_main_menu()
         
-    def load_scores(self):
-        if os.path.exists('scores.json'):
-            with open('scores.json', 'r') as f:
-                return json.load(f)
-        return {'Fácil': float('inf'), 'Médio': float('inf'), 'Difícil': float('inf')}
-    
-    def save_scores(self):
-        with open('scores.json', 'w') as f:
-            json.dump(self.high_scores, f)
     
     def create_main_menu(self):
         title = tk.Label(self.root, text="Campo Minado", font=('Arial', 24, 'bold'),
@@ -41,6 +32,8 @@ class MinesweeperGame:
         scores_frame = tk.Frame(self.root, bg='#E6F3FF')
         scores_frame.pack(pady=20)
         
+        # Mostrar os recordes no menu principal
+       
         
         for diff in self.difficulties:
             btn = tk.Button(button_frame, text=diff,
@@ -61,6 +54,7 @@ class MinesweeperGame:
         mines = self.difficulties[difficulty]['mines']
         
         self.current_game = GameBoard(game_window, size, mines, difficulty, self)
+
 
 class GameBoard:
     def __init__(self, window, size, mines, difficulty, main_game):
@@ -186,7 +180,7 @@ class GameBoard:
         self.stop_timer()
         if self.elapsed_time < self.main_game.high_scores[self.difficulty]:
             self.main_game.high_scores[self.difficulty] = self.elapsed_time
-            self.main_game.save_scores()
+            
         
         messagebox.showinfo("Parabéns!", 
                           f"Você venceu!\nTempo: {self.elapsed_time:.1f} segundos")
