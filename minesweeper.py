@@ -17,18 +17,7 @@ class MinesweeperGame:
             'Difícil': {'size': 16, 'mines': 60}
         }
         
-        self.high_scores = self.load_scores()
         self.create_main_menu()
-        
-    def load_scores(self):
-        if os.path.exists('scores.json'):
-            with open('scores.json', 'r') as f:
-                return json.load(f)
-        return {'Fácil': float('inf'), 'Médio': float('inf'), 'Difícil': float('inf')}
-    
-    def save_scores(self):
-        with open('scores.json', 'w') as f:
-            json.dump(self.high_scores, f)
     
     def create_main_menu(self):
         title = tk.Label(self.root, text="Campo Minado", font=('Arial', 24, 'bold'),
@@ -40,7 +29,6 @@ class MinesweeperGame:
         
         scores_frame = tk.Frame(self.root, bg='#E6F3FF')
         scores_frame.pack(pady=20)
-        
         
         for diff in self.difficulties:
             btn = tk.Button(button_frame, text=diff,
@@ -77,28 +65,7 @@ class GameBoard:
         self.timer_running = False
         
         self.create_board()
-        self.create_timer()
-    
-    def create_timer(self):
-        self.timer_label = tk.Label(self.window, text="",
-                                  font=('Arial', 12), bg='#E6F3FF', fg='#003366')
-        self.timer_label.grid(row=self.size + 1, column=0, columnspan=self.size, pady=10)
-    
-    def start_timer(self):
-        if not self.timer_running:
-            self.start_time = time.time() - self.elapsed_time
-            self.timer_running = True
-            self.update_timer()
-    
-    def stop_timer(self):
-        self.timer_running = False
-    
-    def update_timer(self):
-        if self.timer_running and not hasattr(self, 'game_over'):
-            self.elapsed_time = time.time() - self.start_time
-            self.timer_label.config(text=f"Tempo: {self.elapsed_time:.1f}s")
-            self.window.after(100, self.update_timer)
-    
+       
     def create_board(self):
         self.board = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.buttons = []
@@ -133,7 +100,7 @@ class GameBoard:
         if not self.game_started:
             self.game_started = True
             self.place_mines(row, col)
-            self.start_timer()
+            
         
         if self.board[row][col] == 'X':
             self.game_over()
@@ -183,17 +150,15 @@ class GameBoard:
         return True
     
     def win_game(self):
-        self.stop_timer()
         if self.elapsed_time < self.main_game.high_scores[self.difficulty]:
             self.main_game.high_scores[self.difficulty] = self.elapsed_time
-            self.main_game.save_scores()
+            
         
         messagebox.showinfo("Parabéns!", 
                           f"Você venceu!\nTempo: {self.elapsed_time:.1f} segundos")
         self.window.destroy()
     
     def game_over(self):
-        self.stop_timer()
         self.game_over = True
         for i in range(self.size):
             for j in range(self.size):
