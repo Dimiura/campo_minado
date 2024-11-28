@@ -50,7 +50,6 @@ class MinesweeperGame:
         
         self.current_game = GameBoard(game_window, size, mines, difficulty, self)
 
-
 class GameBoard:
     def __init__(self, window, size, mines, difficulty, main_game):
         self.window = window
@@ -67,7 +66,6 @@ class GameBoard:
         
         self.create_board()
        
-    
     def create_board(self):
         self.board = [[0 for _ in range(self.size)] for _ in range(self.size)]
         self.buttons = []
